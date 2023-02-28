@@ -3,12 +3,14 @@ import {
   Column,
   Model,
   AutoIncrement,
-  PrimaryKey
-} from 'sequelize-typescript';
-import { ModelAttributeColumnOptions } from 'sequelize';
+  PrimaryKey,
+  ForeignKey,
+  HasMany,
+} from "sequelize-typescript";
+import { ModelAttributeColumnOptions } from "sequelize";
 
 @Table({
-  tableName: 'menu_item',
+  tableName: "menu_item",
   updatedAt: false,
 })
 export default class MenuItem extends Model {
@@ -23,12 +25,20 @@ export default class MenuItem extends Model {
   @Column
   url: string;
 
+  @ForeignKey(() => MenuItem)
   @Column({
-    type: 'integer',
+    type: "integer",
     defaultValue: null,
+    references: {
+      model: "MenuItem",
+      key: "id",
+    },
   } as ModelAttributeColumnOptions)
   parentId: number;
 
-  @Column({ type: 'datetime' } as ModelAttributeColumnOptions)
+  @HasMany(() => MenuItem, { foreignKey: "parentId", as: "children" })
+  children?: MenuItem[];
+
+  @Column({ type: "datetime" } as ModelAttributeColumnOptions)
   declare createdAt: Date;
 }
